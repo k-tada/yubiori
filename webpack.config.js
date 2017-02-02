@@ -51,14 +51,14 @@ module.exports = {
   ],
   plugins: [
     new ExtractTextPlugin('../assets/css/style.css', { allChunks: true }),
-    new webpack.ProvidePlugin({
-      'React': 'react',
-      'ReactDOM': 'react-dom',
-      'CSSModules': 'react-css-modules',
-      'moment': 'moment',
-      'axios': 'axios',
-      'path': 'path',
-    }),
+    // new webpack.ProvidePlugin({
+    //   'React': 'react',
+    //   'ReactDOM': 'react-dom',
+    //   'CSSModules': 'react-css-modules',
+    //   'moment': 'moment',
+    //   'axios': 'axios',
+    //   'path': 'path',
+    // }),
   ],
 }
 

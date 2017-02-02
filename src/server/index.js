@@ -3,29 +3,33 @@ import Koa from 'koa';
 import ks from 'koa-static';
 import { renderToString } from 'react-dom/server';
 import path from 'path';
-import { createElement } from 'react';
-import App from '../client/components/App';
+import React, { createElement } from 'react';
+import { match, RouterContext } from 'react-router';
+import App from '../client/Main';
+import clientRoutes from '../client/routes';
 
 const app = new Koa();
 
-app.use( ks( path.join( __dirname, '..', 'public' ) ) );
+app.use( ks( './public' ) );
 
 app.use( async ( ctx, next ) => {
   // server-side rendering
-  const renderedContent = renderToString(createElement( App ) );
-  ctx.body = `
-  <!DOCTYPE html>
-  <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>SSR Sample</title>
-  </head>
-  <body>
-    <div id="app">${ renderedContent }</div>
-    <script src="/assets/bundle.js"></script>
-  </body>
-  </html>
-  `;
+  match({ routes: clientRoutes, location: ctx.request.url }, ( err, redirectLocation, renderProps ) => {
+    if ( err ) {
+      ctx.status = 500;
+      ctx.body = err.message;
+    } else if ( redirectLocation ) {
+      ctx.redirect( redirectLocation.pathname + redirectLocation.search );
+    } else if ( renderProps ) {
+      ctx.body = `
+        <div id="app">${ renderToString(<RouterContext { ...renderProps } />) }</div>
+        <script src="/assets/bundle.js"></script>
+      `;
+    } else {
+      ctx.status = 404;
+      ctx.body = 'Not Found';
+    }
+  });
 });
 
 app.listen( 3030 );
