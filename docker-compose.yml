@@ -1,0 +1,24 @@
+version: '2'
+services:
+  app:
+    image: node:7.5
+    container_name: app
+    hostname: app
+    ports:
+      - "3030:3030"
+    volumes:
+      - .:/src
+    environment:
+      PORT: 3030
+      SECRET_KEY_JWT: 'uUGhM2xF'
+    working_dir: /src
+    command: ["sh", "-c", "npm run start"]
+    links:
+      - mongo:mongodb
+
+  mongo:
+    restart: always
+    image: mongo
+    volumes:
+      - ./mongo:/data/db
+
