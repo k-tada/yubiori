@@ -1,9 +1,10 @@
 import 'babel-polyfill';
+import path from 'path';
 import Koa from 'koa';
 import ks from 'koa-static';
-import apiRoutes from './routes/api';
-import clientRoutes from './routes/client';
+import send from 'koa-send';
 import bodyParser from 'koa-bodyparser';
+import apiRoutes from './routes/api';
 
 const app = new Koa();
 
@@ -26,7 +27,10 @@ app.use( bodyParser({
 
 app.use( apiRoutes.routes() );
 
-app.use( clientRoutes );
+// UI
+app.use( async ( ctx, next ) => {
+  await send( ctx, path.join( __dirname, '../../public/index.html' ) );
+});
 
 app.listen( process.env.PORT || 3000 );
 
